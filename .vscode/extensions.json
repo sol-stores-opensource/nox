@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    //
+    "wmaurer.change-case",
+    "billstewart.extended-cursormove",
+    "jakebecker.elixir-ls",
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "alefragnani.bookmarks",
+    "phoenixframework.phoenix",
+    "csstools.postcss"
+  ]
+}

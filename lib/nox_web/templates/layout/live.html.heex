@@ -1,0 +1,268 @@
+<div x-data="{ openProfile: false, openMenu: false }">
+  <div
+    x-cloak
+    x-show="openMenu"
+    class="fixed inset-0 flex z-20 md:hidden"
+    role="dialog"
+    aria-modal="true"
+  >
+    <!--
+      Off-canvas menu overlay, show/hide based on off-canvas menu state.
+    -->
+    <div
+      x-cloak
+      x-show="openMenu"
+      @click="openMenu = !openMenu"
+      x-transition:enter="transition-opacity ease-linear duration-300"
+      x-transition:enter-start="transform opacity-0"
+      x-transition:enter-end="transform opacity-100"
+      x-transition:leave="transition-opacity ease-linear duration-300"
+      x-transition:leave-start="transform opacity-100"
+      x-transition:leave-end="transform opacity-0"
+      class="fixed inset-0 bg-gray-600 bg-opacity-75"
+      aria-hidden="true"
+    >
+    </div>
+    <!--
+      Off-canvas menu, show/hide based on off-canvas menu state.
+    -->
+    <div
+      x-cloak
+      x-show="openMenu"
+      x-transition:enter="transition ease-in-out duration-300 transform"
+      x-transition:enter-start="-translate-x-full"
+      x-transition:enter-end="translate-x-0"
+      x-transition:leave="transition ease-in-out duration-300 transform"
+      x-transition:leave-start="translate-x-0"
+      x-transition:leave-end="-translate-x-full"
+      class="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-indigo-700"
+    >
+      <!--
+        Close button, show/hide based on off-canvas menu state.
+      -->
+      <div
+        x-cloak
+        x-show="openMenu"
+        x-transition:enter="ease-in-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="ease-in-out duration-300"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="absolute top-0 right-0 -mr-12 pt-2"
+      >
+        <button
+          @click="openMenu = !openMenu"
+          type="button"
+          class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        >
+          <span class="sr-only">Close sidebar</span>
+          <HeroiconsV1.Outline.x class="h-6 w-6 text-white" />
+        </button>
+      </div>
+
+      <div class="flex-shrink-0 flex items-center px-4">
+        <span class="text-white text-2xl font-bold">
+          Nox
+          <%= if warn_env = Application.get_env(:nox, :nox_warn_deploy_env) do %>
+            [<%= warn_env %>]
+          <% end %>
+        </span>
+      </div>
+      <div class="mt-5 flex-1 h-0 overflow-y-auto">
+        <nav class="px-2 space-y-1">
+          <%= for item <- nav_items(@socket, assigns) do %>
+            <%= case item do %>
+              <% %{icon: icon, to: to, title: title, active: active} = opts -> %>
+                <.a
+                  to={to}
+                  target={opts[:target] || "_self"}
+                  class={
+                    if active,
+                      do:
+                        "bg-indigo-800 text-white group flex items-center px-2 py-2 text-base font-medium rounded-md",
+                      else:
+                        "text-indigo-100 hover:bg-indigo-600 group flex items-center px-2 py-2 text-base font-medium rounded-md"
+                  }
+                >
+                  <.nav_icon icon={icon} />
+                  <%= title %>
+                </.a>
+              <% %{divider: divider} -> %>
+                <div class="h-6"></div>
+                <h3 class="px-3 text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                  <%= divider %>
+                </h3>
+            <% end %>
+          <% end %>
+        </nav>
+      </div>
+    </div>
+
+    <div class="flex-shrink-0 w-14" aria-hidden="true">
+      <!-- Dummy element to force sidebar to shrink to fit close icon -->
+    </div>
+  </div>
+  <!-- Static sidebar for desktop -->
+  <div class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+    <!-- Sidebar component -->
+    <div class="flex flex-col flex-grow pt-5 bg-indigo-700 overflow-y-auto">
+      <div class="flex items-center flex-shrink-0 px-4">
+        <span class="text-white text-2xl font-bold">
+          Nox
+          <%= if warn_env = Application.get_env(:nox, :nox_warn_deploy_env) do %>
+            [<%= warn_env %>]
+          <% end %>
+        </span>
+      </div>
+      <div class="mt-5 flex-1 flex flex-col">
+        <nav class="flex-1 px-2 pb-4 space-y-1">
+          <%= for item <- nav_items(@socket, assigns) do %>
+            <%= case item do %>
+              <% %{icon: icon, to: to, title: title, active: active} = opts -> %>
+                <.a
+                  to={to}
+                  target={opts[:target] || "_self"}
+                  class={
+                    if active,
+                      do:
+                        "bg-indigo-800 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+                      else:
+                        "text-indigo-100 hover:bg-indigo-600 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                  }
+                >
+                  <.nav_icon icon={icon} />
+                  <%= title %>
+                </.a>
+              <% %{divider: divider} -> %>
+                <div class="h-6"></div>
+                <h3 class="px-3 text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                  <%= divider %>
+                </h3>
+            <% end %>
+          <% end %>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <div class="md:pl-64 flex flex-col flex-1">
+    <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
+      <button
+        @click="openMenu = !openMenu"
+        type="button"
+        class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
+      >
+        <span class="sr-only">Open sidebar</span>
+        <HeroiconsV1.Outline.menu_alt_2 class="h-6 w-6" />
+      </button>
+      <div class="flex-1 px-4 flex justify-between">
+        <div class="flex-1 flex"></div>
+        <div class="ml-4 flex items-center md:ml-6">
+          <button
+            type="button"
+            class="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            <span class="sr-only">View notifications</span>
+            <HeroiconsV1.Outline.bell class="h-6 w-6" />
+          </button>
+          <!-- Profile dropdown -->
+          <div class="ml-3 relative">
+            <div>
+              <button
+                @click="openProfile = !openProfile"
+                @keydown.escape.window="openProfile = false"
+                @click.away="openProfile = false"
+                type="button"
+                class="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                id="user-menu-button"
+                aria-expanded="false"
+                aria-haspopup="true"
+              >
+                <span class="sr-only">Open user menu</span>
+                <%= case @current_user do %>
+                  <% %{auth_data: %{"picture" => picture}} when is_binary(picture) -> %>
+                    <img
+                      class="h-8 w-8 rounded-full"
+                      referrerpolicy="no-referrer"
+                      src={picture}
+                      alt=""
+                    />
+                  <% _ -> %>
+                    <HeroiconsV1.Outline.question_mark_circle class="h-8 w-8" />
+                <% end %>
+              </button>
+            </div>
+            <!--
+              Dropdown menu, show/hide based on menu state.
+            -->
+            <div
+              x-cloak
+              x-show="openProfile"
+              x-transition:enter="transition ease-out duration-100"
+              x-transition:enter-start="transform opacity-0 scale-95"
+              x-transition:enter-end="transform opacity-100 scale-100"
+              x-transition:leave="transition ease-in duration-75"
+              x-transition:leave-start="transform opacity-100 scale-100"
+              x-transition:leave-end="transform opacity-0 scale-95"
+              class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="user-menu-button"
+              tabindex="-1"
+            >
+              <%= case @current_user do %>
+                <% %{email: email} when is_binary(email) -> %>
+                  <div class="px-4 py-3" role="none">
+                    <p class="text-sm" role="none">Signed in as</p>
+                    <p class="text-sm font-medium text-gray-900 truncate" role="none">
+                      <%= email %>
+                    </p>
+                  </div>
+                <% _ -> %>
+              <% end %>
+
+              <div class="py-1" role="none">
+                <%= if @current_user do %>
+                  <a
+                    href="/logout"
+                    class="active:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
+                    role="menuitem"
+                    tabindex="-1"
+                    id="user-menu-item-2"
+                  >
+                    Sign out
+                  </a>
+                <% else %>
+                  <a
+                    href="/login"
+                    class="active:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
+                    role="menuitem"
+                    tabindex="-1"
+                    id="user-menu-item-2"
+                  >
+                    Sign in
+                  </a>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <div class="py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <!-- Replace with your content -->
+          <div class="py-4">
+            <main class="container">
+              <%= @inner_content %>
+            </main>
+          </div>
+          <!-- /End replace -->
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<.flash_container {assigns} id="main_flash" />

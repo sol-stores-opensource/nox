@@ -1,0 +1,1 @@
+call "%~dp0\nox" eval Nox.Release.migrate
